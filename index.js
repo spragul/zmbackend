@@ -13,8 +13,6 @@ const passport = require("passport");
 require("dotenv").config();
 const mongoose = require("mongoose");
 const session = require("express-session");
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const findOrCreate = require("mongoose-findorcreate");
 const cors = require("cors");
 app.use(cors())
 const cookieParser = require("cookie-parser");
@@ -41,7 +39,7 @@ app.use(express.json());
 app.use(passport.session());
 app.use(cookieParser(process.env.SECRET));
 const { hashPassword, hashCompare, createToken, validate } = require('./auth')
-mongoose.connect("mongodb+srv://spragul33:JHEqiat4JO57x2Ay@cluster0.hkdlzv3.mongodb.net/zoom?retryWrites=true&w=majority", {
+mongoose.connect(`${mongooseurl}?retryWrites=true&w=majority`, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -226,7 +224,6 @@ app.post("/resetpassword/:id/:token", async (req, res) => {
 app.get("/authenticated/:id", async (req, res) => {
   try {
     let value = await User.findOne({ _id: req.params.id })
-    console.log(value);
     if (value) {
       console.log(value)
       res.send({
@@ -257,7 +254,6 @@ app.get("/logout", (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-if (process.env.NODE_ENV === "production") app.use(cors());
 
 app.get("/api/join", (req, res) => {
   res.send({ link: uuidV4() });
