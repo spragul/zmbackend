@@ -234,7 +234,6 @@ app.get("/authenticated/:id", async (req, res) => {
   try {
     let value = await User.findOne({ _id: req.params.id })
     if (value) {
-      console.log(value)
       res.send({
         messages: "true",
         data: value
