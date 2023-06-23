@@ -94,11 +94,14 @@ app.post('/signup', async (req, res) => {
     if (!userdata) {
       let myroomid = await myrooms.find({}, { roomId: 1, _id: 0 })
       let a = [];
+      console.log(myroomid.length)
       if (!(myroomid.length === 0)) {
-        for (let i = 0; i < myroomid.length - 1; i++) {
+        for (let i = 0; i < myroomid.length; i++) {
           let b = myroomid[i].roomId;
           a.push(b);
         }
+      }else{
+        console.log("not working");
       }
       let hashedPassword = await hashPassword(req.body.password)
       req.body.password = hashedPassword
