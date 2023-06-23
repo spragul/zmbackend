@@ -47,7 +47,7 @@ mongoose.set("useFindAndModify", false);
 
 let UserSchema = new mongoose.Schema(
   {
-    name:{type:String,required:true},
+    name: { type: String, required: true },
     email: {
       type: String,
       required: true,
@@ -57,9 +57,9 @@ let UserSchema = new mongoose.Schema(
       }
     },
     secret: [String],
-    picurL: { type:String,default:'https://lh3.googleusercontent.com/a/AAcHTtdN2iMTWhGF3486XkfPd3yajm3MPBweYQldVtqj=s96-c'},
+    picurL: { type: String, default: 'https://lh3.googleusercontent.com/a/AAcHTtdN2iMTWhGF3486XkfPd3yajm3MPBweYQldVtqj=s96-c' },
     uniqueId: String,
-    googleId: { type:Number,required: true },
+    googleId: { type: Number, required: true },
     rooms: [String], //stores only the roomId of the rooms this user is a part of
     password: { type: String, required: true },
   },
@@ -92,12 +92,13 @@ app.post('/signup', async (req, res) => {
   try {
     let userdata = await User.findOne({ email: req.body.email })
     if (!userdata) {
-      let myroomid = await myrooms.find({},{ roomId:1,_id:0 })
-      let a=[];
-    for(let i=0;i<myroomid.length-1;i++){
-        let b= myroomid[i].roomId;
-         console.log(b)
-         a.push(b);
+      let myroomid = await myrooms.find({}, { roomId: 1, _id: 0 })
+      let a = [];
+      if (!(myroomid.length === 0)) {
+        for (let i = 0; i < myroomid.length - 1; i++) {
+          let b = myroomid[i].roomId;
+          a.push(b);
+        }
       }
       let hashedPassword = await hashPassword(req.body.password)
       req.body.password = hashedPassword
@@ -108,28 +109,28 @@ app.post('/signup', async (req, res) => {
         picurL: req.body.picurL,
         uniqueId: uuidV4(),
         password: req.body.password,
-        rooms:a
+        rooms: a
       })
       res.status(201).send({
         message: "User Signup Successfull!",
-        data:"true"
+        data: "true"
       })
     }
     else {
-      res.status(400).send({ message: "User Alread Exists!" ,  data:"false"})
-    
+      res.status(400).send({ message: "User Alread Exists!", data: "false" })
+
     }
 
   } catch (error) {
-    res.status(500).send({ message: "Internal Server Error", error,data:"false" })
-    
+    res.status(500).send({ message: "Internal Server Error", error, data: "false" })
+
   }
 })
 //login
 app.post('/login', async (req, res) => {
   try {
     let userdata = await User.findOne({ email: req.body.email })
-    let getdata= userdata._id;
+    let getdata = userdata._id;
     if (userdata) {
       console.log(userdata)
       //verify the password
@@ -144,8 +145,8 @@ app.post('/login', async (req, res) => {
         })
         res.status(200).send({
           message: "User Login Successfull!",
-          token:token,
-          value:getdata
+          token: token,
+          value: getdata
         })
       }
       else {
@@ -161,38 +162,38 @@ app.post('/login', async (req, res) => {
   }
 })
 //forgotpassword
-app.post('/forgotpassword',async(req,res)=>{
+app.post('/forgotpassword', async (req, res) => {
   try {
-    let user = await User.findOne({email:req.body.email})
+    let user = await User.findOne({ email: req.body.email })
     console.log(user)
-    if(!user){
-      res.send({message:"user not exists!!"})
+    if (!user) {
+      res.send({ message: "user not exists!!" })
     }
-     const secret = process.env.SECRETKEY+user.password;
-     let token = await jwt.sign({email:user.email,id:user._id},secret,{expiresIn:'15m'})
-     console.log(user._id,token)
-     const link =`https://main--unrivaled-froyo-c6cf87.netlify.app/resetpassword/${user._id}/${token}`
-     console.log(link)
+    const secret = process.env.SECRETKEY + user.password;
+    let token = await jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: '15m' })
+    console.log(user._id, token)
+    const link = `https://main--unrivaled-froyo-c6cf87.netlify.app/resetpassword/${user._id}/${token}`
+    console.log(link)
     var transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.G_MAIL,
-        pass: process.env.G_MAIL_PASSWORD,  
+        pass: process.env.G_MAIL_PASSWORD,
       }
     });
-    let gmailId= await User.findOne({email:req.body.email})
+    let gmailId = await User.findOne({ email: req.body.email })
     var mailOptions = {
       from: process.env.G_MAIL,
       to: gmailId.email,
       subject: 'Reset password',
       text: link
     };
-    
-    transporter.sendMail(mailOptions, function(error, info){
+
+    transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         res.send(error)
       } else {
-        res.send({message:"meil send"})
+        res.send({ message: "meil send" })
       }
     });
   } catch (error) {
@@ -202,8 +203,8 @@ app.post('/forgotpassword',async(req,res)=>{
 //resetpassword
 app.post("/resetpassword/:id/:token", async (req, res) => {
   const { id, token } = req.params;
-  console.log(id,token)
-  const { password } = {password:req.body.password};
+  console.log(id, token)
+  const { password } = { password: req.body.password };
   const oldUser = await User.findOne({ _id: id });
   if (!oldUser) {
     return res.json({ status: "User Not Exists!!" });
@@ -235,15 +236,15 @@ app.get("/authenticated/:id", async (req, res) => {
     if (value) {
       console.log(value)
       res.send({
-        messages:"true",
-         data:value 
-        });
+        messages: "true",
+        data: value
+      });
 
     } else {
-      res.send({message:"false"});
+      res.send({ message: "false" });
     }
   } catch (error) {
-    res.send({message:"false"});
+    res.send({ message: "false" });
   }
 });
 app.get("/ragul/:id", validate, async (req, res) => {
