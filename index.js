@@ -39,7 +39,7 @@ app.use(express.json());
 app.use(passport.session());
 app.use(cookieParser(process.env.SECRET));
 const { hashPassword, hashCompare, createToken, validate } = require('./auth')
-mongoose.connect(`${mongooseurl}?retryWrites=true&w=majority`, {
+mongoose.connect(`${process.env.mongooseurl}?retryWrites=true&w=majority`, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -86,12 +86,19 @@ const chatSchema = new mongoose.Schema({
 const Chats = new mongoose.model("Chat", chatSchema);
 
 const Rooms = new mongoose.model("room", roomSchema);
+const myrooms = mongoose.model("room", roomSchema);
 
 app.post('/signup', async (req, res) => {
   try {
     let userdata = await User.findOne({ email: req.body.email })
     if (!userdata) {
-
+      let myroomid = await myrooms.find({},{ roomId:1,_id:0 })
+      let a=[];
+    for(let i=0;i<myroomid.length-1;i++){
+        let b= myroomid[i].roomId;
+         console.log(b)
+         a.push(b);
+      }
       let hashedPassword = await hashPassword(req.body.password)
       req.body.password = hashedPassword
       let uservalue = await User.create({
@@ -100,7 +107,8 @@ app.post('/signup', async (req, res) => {
         googleId: req.body.googleId,
         picurL: req.body.picurL,
         uniqueId: uuidV4(),
-        password: req.body.password
+        password: req.body.password,
+        rooms:a
       })
       res.status(201).send({
         message: "User Signup Successfull!",
