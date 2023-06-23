@@ -86,7 +86,7 @@ const chatSchema = new mongoose.Schema({
 const Chats = new mongoose.model("Chat", chatSchema);
 
 const Rooms = new mongoose.model("room", roomSchema);
-const myrooms = mongoose.model("room", roomSchema);
+const myrooms = mongoose.model("rooms", roomSchema);
 
 app.post('/signup', async (req, res) => {
   try {
