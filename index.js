@@ -4,7 +4,7 @@ const nodemailer = require("nodemailer");
 const server = require("http").Server(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://main--unrivaled-froyo-c6cf87.netlify.app",
     methods: ["GET", "POST"],
   },
 });
@@ -165,7 +165,7 @@ app.post('/forgotpassword',async(req,res)=>{
      const secret = process.env.SECRETKEY+user.password;
      let token = await jwt.sign({email:user.email,id:user._id},secret,{expiresIn:'15m'})
      console.log(user._id,token)
-     const link =`http://localhost:3000/resetpassword/${user._id}/${token}`
+     const link =`https://main--unrivaled-froyo-c6cf87.netlify.app/resetpassword/${user._id}/${token}`
      console.log(link)
     var transporter = nodemailer.createTransport({
       service: 'gmail',
