@@ -4,7 +4,8 @@ const nodemailer = require("nodemailer");
 const server = require("http").Server(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: "https://main--unrivaled-froyo-c6cf87.netlify.app",
+    origin: "https://main-unrivaled-froyo-c6cf87.netlify.app",
+            
     methods: ["GET", "POST"],
   },
 });
